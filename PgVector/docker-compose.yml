@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  # PostgreSQL + pgvector 服务
+  pgvector:
+    image: pgvector/pgvector:0.8.0-pg15-trixie
+    container_name: share-postgres
+    restart: unless-stopped
+    networks:
+      - share
+    environment:
+      # 使用默认的 postgres 用户
+      - POSTGRES_PASSWORD=hariko  # 设置默认用户的密码
+      - TZ=Asia/Shanghai  # 设置时区
+      - POSTGRES_DB=postgres
+      - PGDATA=/var/lib/postgresql/data/pgdata  # 自定义数据目录
+    volumes:
+      - data:/var/lib/postgresql/data  # 使用命名卷
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'postgres', '-d', 'vector_db']  # 使用默认用户
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    ports:
+      - "5432:5432"
+
+volumes:
+  data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./pg/data  # 绑定到本地目录
+
+networks:
+  share:
+    external: true

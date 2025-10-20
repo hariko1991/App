@@ -1,0 +1,32 @@
+version: '3.3'
+services:
+  redis:
+    image: redis:7.0.15-alpine
+    ports:
+      - 6379:6379
+    container_name: share-redis
+    networks:
+      - share
+    restart: always
+    command: |
+      redis-server --requirepass hariko --loglevel warning --maxclients 10000 --appendonly yes --save 60 10 --maxmemory 4gb --maxmemory-policy noeviction
+    healthcheck:
+      test: ['CMD', 'redis-cli', '-a', 'hariko', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+    volumes:
+      - data:/data
+
+volumes:
+  data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./redis/data  # 本地目录路径
+
+networks:
+  share:
+    external: true

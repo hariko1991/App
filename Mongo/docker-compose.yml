@@ -1,0 +1,65 @@
+version: '3.3'
+services:
+  mongo:
+    image: mongo:8.0.15 # cpu 不支持 AVX 时候使用 4.4.29
+    container_name: share-mongo
+    restart: always
+    ports:
+      - 27017:27017
+    networks:
+      - share
+    command: mongod --keyFile /data/mongodb.key --replSet rs0
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=hariko
+    volumes:
+      - data:/data/db
+    entrypoint:
+      - bash
+      - -c
+      - |
+        openssl rand -base64 128 > /data/mongodb.key
+        chmod 400 /data/mongodb.key
+        chown 999:999 /data/mongodb.key
+        echo 'try {
+          var status = rs.status();
+          if (status.ok !== 1) {
+            throw new Error("not initialized");
+          }
+          print("Replica set already initialized");
+        } catch (e) {
+          print("Initializing replica set...");
+          rs.initiate({
+            _id: "rs0",
+            members: [
+              { _id: 0, host: "share-mongo:27017" }
+            ]
+          });
+        }' > /data/initReplicaSet.js
+        # 启动MongoDB服务
+        exec docker-entrypoint.sh "$$@" &
+
+        # 等待MongoDB服务启动
+        until mongosh -u admin -p hariko --authenticationDatabase admin --eval "print('waited for connection')"; do
+          echo "Waiting for MongoDB to start..."
+          sleep 2
+        done
+
+        # 执行初始化副本集的脚本
+        mongosh -u admin -p hariko --authenticationDatabase admin /data/initReplicaSet.js
+
+        # 等待docker-entrypoint.sh脚本执行的MongoDB服务进程
+        wait $$!
+
+
+volumes:
+  data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./mongo/data  # 本地目录路径
+
+networks:
+  share:
+    external: true

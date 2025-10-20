@@ -1,0 +1,49 @@
+# 挂载的数据目录
+*/data/
+*/logs/
+*/mysql/
+*/minio/
+*/redis/
+*/mongo/
+*/pg/data/
+
+# PgVector 特定
+PgVector/pg/data/
+
+# MySQL 特定
+MySQL/mysql/
+MySQL/logs/
+MySQL/data/
+
+# Minio 特定
+Minio/minio/
+
+# Unla 特定
+Unla/data/
+
+# Mongo 特定
+Mongo/mongo/data/
+
+# Redis 特定
+Redis/redis/
+
+# 临时文件
+*.log
+*.tmp
+*.temp
+*.cache
+*.pid
+*.lock
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# IDE 文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 环境变量文件（保留 .env 模板，排除实际配置）
+# .env

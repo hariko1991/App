@@ -1,0 +1,88 @@
+version: '3.4'
+
+services:
+  # MySQL 数据库服务
+  db:
+    image: "mysql:8.0.39"
+    restart: always
+    container_name: share-mysql
+    volumes:
+      - data:/var/lib/mysql  # 使用命名卷存储数据
+      - init:/docker-entrypoint-initdb.d  # 命名卷存储初始化脚本
+      - conf:/etc/mysql/conf.d  # 命名卷存储配置文件
+      - logs:/var/log/mysql    # 命名卷存储日志
+    ports:
+      - '3306:3306'
+    environment:
+      TZ: Asia/Shanghai   # 设置时区
+      MYSQL_ROOT_PASSWORD: hariko # 设置 root 用户的密码
+      MYSQL_USER: oneapi   # 创建专用用户
+      MYSQL_PASSWORD: hariko    # 设置专用用户密码
+      MYSQL_DATABASE: one-api   # 自动创建数据库
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4  # 字符集
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci  # 排序规则
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --sql_mode=STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO
+      - --max_connections=1000
+      - --innodb_buffer_pool_size=256M
+      - --innodb_log_file_size=64M
+      - --innodb_flush_log_at_trx_commit=1
+      - --innodb_flush_method=O_DIRECT
+      - --slow_query_log=1
+      - --slow_query_log_file=/var/log/mysql/slow.log
+      - --long_query_time=2
+      - --log_queries_not_using_indexes=1
+      - --general_log=0
+      - --log_bin=mysql-bin
+      - --server_id=1
+      - --binlog_format=ROW
+      - --expire_logs_days=7
+      - --max_binlog_size=100M
+      - --skip-plugin-load
+    networks:
+      - share
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-phariko"]
+      timeout: 20s
+      retries: 10
+      interval: 30s
+      start_period: 60s
+    security_opt:
+      - seccomp:unconfined
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+
+volumes:
+  data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/mysql  # 本地目录路径
+  init:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./mysql/init
+  conf:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./mysql/conf
+  logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./logs/mysql
+
+networks:
+  share:
+    external: true
