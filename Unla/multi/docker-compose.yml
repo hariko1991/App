@@ -25,6 +25,7 @@ services:
 
   web:
     image: ghcr.io/amoylab/unla/web:latest
+    container_name: web
     ports:
       - "8080:80"
       - "5234:5234"
@@ -41,6 +42,7 @@ services:
 
   mcp-gateway:
     image: ghcr.io/amoylab/unla/mcp-gateway:latest
+    container_name: mcp-gateway
     ports:
       - "5235:5235"
     environment:

@@ -1,0 +1,72 @@
+name: facebook-ads-account
+tenant: default
+routers:
+  - server: facebook-ads-account
+    prefix: /gateway/facebook
+    cors:
+      allowOrigins:
+        - '*'
+      allowMethods:
+        - GET
+        - OPTIONS
+        - POST
+      allowHeaders:
+        - Content-Type
+        - Authorization
+        - Mcp-Session-Id
+        - mcp-protocol-version
+      exposeHeaders:
+        - Mcp-Session-Id
+        - mcp-protocol-version
+      allowCredentials: true
+servers:
+  - name: facebook-ads-account
+    description: Facebook Ads Account Information Service
+    allowedTools:
+      - get_ad_account_info
+    config:
+      AccessToken: >-
+        EAAPtJDXy8ssBO632sesJOZAehPouiWwiZBwiZBZCNQOjwZBI0XxzXuiy2bZArZCnCM6OgtfHsR59DTb898LMih8vJySrQ69srED6IetWpfuys9BHX9qjYCzsUuXW6yKiZCtsW7DBiTdjGZCZCETsZAZAiFDMvwvsuwHXhjb4KZAVdeEJR7i1enN2i8g8fBMS5ELbFQhJ2pAZDZD
+      DefaultFields: daily_spend_limit,spend_cap,amount_spent,currency,account_status,name
+tools:
+  - name: get_ad_account_info
+    description: >-
+      Get Facebook Ad Account information including spend limits, spend cap,
+      amount spent, currency, account status and name
+    method: GET
+    endpoint: >-
+      https://graph.facebook.com/v23.0/act_{{.Args.account_id}}?access_token=EAAPtJDXy8ssBO632sesJOZAehPouiWwiZBwiZBZCNQOjwZBI0XxzXuiy2bZArZCnCM6OgtfHsR59DTb898LMih8vJySrQ69srED6IetWpfuys9BHX9qjYCzsUuXW6yKiZCtsW7DBiTdjGZCZCETsZAZAiFDMvwvsuwHXhjb4KZAVdeEJR7i1enN2i8g8fBMS5ELbFQhJ2pAZDZD&fields=daily_spend_limit,spend_cap,amount_spent,currency,account_status,name
+    headers:
+      Accept: '*/*'
+      Accept-Encoding: ''
+      Connection: keep-alive
+      User-Agent: Unla-MCP-Gateway/1.0
+    args:
+      - name: account_id
+        position: path
+        required: true
+        type: string
+        description: Facebook Ad Account ID (without 'act_' prefix, e.g., 1287851913041814)
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: |-
+      {
+        "id": "{{.Response.Data.id}}",
+        "name": "{{.Response.Data.name}}",
+        "account_status": {{.Response.Data.account_status}},
+        "currency": "{{.Response.Data.currency}}",
+        "amount_spent": "{{.Response.Data.amount_spent}}",
+        "spend_cap": "{{.Response.Data.spend_cap}}",
+        "daily_spend_limit": {
+          "amount": "{{.Response.Data.daily_spend_limit.amount}}",
+          "amount_in_hundredths": "{{.Response.Data.daily_spend_limit.amount_in_hundredths}}",
+          "currency": "{{.Response.Data.daily_spend_limit.currency}}",
+          "offsetted_amount": "{{.Response.Data.daily_spend_limit.offsetted_amount}}"
+        }
+      }
+prompts: []
+mcpServers: []
+createdAt: '2025-10-17T16:30:00+08:00'
+updatedAt: '2025-10-21T12:04:03.744176+08:00'

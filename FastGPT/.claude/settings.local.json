@@ -12,7 +12,9 @@
       "Bash(docker restart:*)",
       "Read(//root/App/Mongo/**)",
       "Bash(docker-compose down:*)",
-      "Bash(docker-compose up:*)"
+      "Bash(docker-compose up:*)",
+      "Bash(curl:*)",
+      "Bash(docker-compose restart:*)"
     ],
     "deny": [],
     "ask": []
