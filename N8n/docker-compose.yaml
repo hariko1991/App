@@ -1,0 +1,182 @@
+# docker-compose.yml - 生产环境部署
+version: '3.8'
+
+services:
+  # PostgreSQL 数据库
+  # postgres:
+  #   image: postgres:15
+  #   container_name: n8n_postgres
+  #   restart: unless-stopped
+  #   environment:
+  #     POSTGRES_DB: n8n
+  #     POSTGRES_USER: n8n
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - n8n_network
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U n8n"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+
+  # Redis (可选，用于队列)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: n8n_redis
+  #   restart: unless-stopped
+  #   volumes:
+  #     - redis_data:/data
+  #   networks:
+  #     - n8n_network
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+
+  # n8n 主服务
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n_main
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      # 数据库配置
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=${DB_POSTGRESDB_HOST}
+      - DB_POSTGRESDB_PORT=${DB_POSTGRESDB_PORT:-5432}
+      - DB_POSTGRESDB_DATABASE=${DB_POSTGRESDB_DATABASE:-n8n}
+      - DB_POSTGRESDB_USER=${DB_POSTGRESDB_USER}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+      
+      # Redis 配置 (队列模式)
+      - QUEUE_BULL_REDIS_HOST=${QUEUE_BULL_REDIS_HOST}
+      - QUEUE_BULL_REDIS_PORT=${QUEUE_BULL_REDIS_PORT:-6379}
+      - QUEUE_BULL_REDIS_PASSWORD=${QUEUE_BULL_REDIS_PASSWORD}
+      
+      # 基础认证
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER:-admin}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD}
+      
+      # 安全配置
+      - N8N_SECURE_COOKIE=true
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      
+      # 网络配置
+      - WEBHOOK_URL=${WEBHOOK_URL}
+      - N8N_HOST=${N8N_HOST}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      
+      # 工作流配置
+      - EXECUTIONS_PROCESS=queue
+      - EXECUTIONS_MODE=queue
+      - GENERIC_TIMEZONE=Asia/Shanghai
+      
+      # 日志配置
+      - N8N_LOG_LEVEL=info
+      - N8N_LOG_OUTPUT=console,file
+      - N8N_LOG_FILE_LOCATION=/home/node/.n8n/logs/
+      
+      # 文件上传限制
+      - N8N_PAYLOAD_SIZE_MAX=104857600  # 100MB
+      
+      # 工作流执行设置
+      - EXECUTIONS_DATA_SAVE_ON_ERROR=all
+      - EXECUTIONS_DATA_SAVE_ON_SUCCESS=all
+      - EXECUTIONS_DATA_MAX_AGE=336  # 14天
+      
+    volumes:
+      - data:/home/node/.n8n
+      - /etc/localtime:/etc/localtime:ro
+      
+    networks:
+      - share
+      - n8n_network
+      
+    # depends_on:
+    #   postgres:
+    #     condition: service_healthy
+    #   redis:
+    #     condition: service_healthy
+    
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5678/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # n8n 队列工作进程 (可选，用于高负载)
+  n8n-worker:
+    image: n8nio/n8n:latest
+    container_name: n8n_worker
+    restart: unless-stopped
+    command: worker
+    environment:
+      # 继承主服务的环境变量
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=${DB_POSTGRESDB_HOST}
+      - DB_POSTGRESDB_PORT=${DB_POSTGRESDB_PORT:-5432}
+      - DB_POSTGRESDB_DATABASE=${DB_POSTGRESDB_DATABASE:-n8n}
+      - DB_POSTGRESDB_USER=${DB_POSTGRESDB_USER}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+      
+      - QUEUE_BULL_REDIS_HOST=${QUEUE_BULL_REDIS_HOST}
+      - QUEUE_BULL_REDIS_PORT=${QUEUE_BULL_REDIS_PORT:-6379}
+      - QUEUE_BULL_REDIS_PASSWORD=${QUEUE_BULL_REDIS_PASSWORD}
+      
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      - GENERIC_TIMEZONE=Asia/Shanghai
+      
+    volumes:
+      - data:/home/node/.n8n
+      
+    networks:
+      - share
+      - n8n_network
+      
+    # depends_on:
+    #   postgres:
+    #     condition: service_healthy
+    #   redis:
+    #     condition: service_healthy
+
+  # Nginx 反向代理 (可选)
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: n8n_nginx
+  #   restart: unless-stopped
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf:ro
+  #     - ./ssl:/etc/nginx/ssl:ro
+  #   networks:
+  #     - share
+  #     - n8n_network
+  #   depends_on:
+  #     - n8n
+
+volumes:
+  # postgres_data:
+  #   driver: local
+  # redis_data:
+  #   driver: local
+  data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data  # 本地目录路径
+
+
+networks:
+  share:
+    external: true
+  n8n_network:
+    driver: bridge
