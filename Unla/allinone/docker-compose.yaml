@@ -12,21 +12,21 @@ services:
       - ENV=production
       - TZ=${TZ:-UTC}
     volumes:
-      - config:/app/configs
-      - data:/app/data
-      - ./.env:/app/.env
+      - /mnt/d/Develop/Wsl/Mnt/Unla/config:/app/configs
+      - /mnt/d/Develop/Wsl/Mnt/Unla/data:/app/data
+      - /mnt/d/Develop/Wsl/Mnt/Unla/.env:/app/.env
     restart: unless-stopped
 
-volumes:
-  data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./data  # 本地目录路径
-  config:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./config  # 本地目录路径
+# volumes:
+#   data:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: ./data  # 本地目录路径
+#   config:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: ./config  # 本地目录路径

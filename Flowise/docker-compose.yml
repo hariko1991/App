@@ -19,7 +19,7 @@ services:
         ports:
             - '${PORT:-3000}:${PORT:-3000}'
         volumes:
-            - data:/root/.flowise
+            - /mnt/d/Develop/Wsl/Mnt/Flowise/data:/root/.flowise
         environment:
             # --- Essential Flowise Vars ---
             - PORT=${PORT:-3000}
@@ -164,7 +164,7 @@ services:
         container_name: flowise-worker
         restart: always
         volumes:
-            - data:/root/.flowise
+            - /mnt/d/Develop/Wsl/Mnt/Flowise/data:/root/.flowise
         environment:
             # --- Essential Flowise Vars ---
             - WORKER_PORT=${WORKER_PORT:-5566}
@@ -304,15 +304,15 @@ services:
         networks:
             - flowise-net
 
-volumes:
-  # redis_data:
-  #   driver: local
-  data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /var/lib/docker-desktop/Flowise  # 本地目录路径
+# volumes:
+#   # redis_data:
+#   #   driver: local
+#   data:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: /var/lib/docker-desktop/Flowise  # 本地目录路径
 
 networks:
   flowise-net:
