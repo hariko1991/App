@@ -7,10 +7,10 @@ services:
     restart: always
     container_name: share-mysql
     volumes:
-      - data:/var/lib/mysql  # 使用命名卷存储数据
-      - init:/docker-entrypoint-initdb.d  # 命名卷存储初始化脚本
-      - conf:/etc/mysql/conf.d  # 命名卷存储配置文件
-      - logs:/var/log/mysql    # 命名卷存储日志
+      - /mnt/d/Develop/Wsl/Mnt/MySQL/data:/var/lib/mysql  # 使用命名卷存储数据
+      - /mnt/d/Develop/Wsl/Mnt/MySQL/init:/docker-entrypoint-initdb.d  # 命名卷存储初始化脚本
+      - /mnt/d/Develop/Wsl/Mnt/MySQL/conf:/etc/mysql/conf.d  # 命名卷存储配置文件
+      - /mnt/d/Develop/Wsl/Mnt/MySQL/logs:/var/log/mysql    # 命名卷存储日志
     ports:
       - '3306:3306'
     environment:
@@ -57,31 +57,31 @@ services:
         soft: 65536
         hard: 65536
 
-volumes:
-  data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./data/mysql  # 本地目录路径
-  init:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./mysql/init
-  conf:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./mysql/conf
-  logs:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./logs/mysql
+# volumes:
+#   data:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: ./data/mysql  # 本地目录路径
+#   init:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: ./mysql/init
+#   conf:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: ./mysql/conf
+#   logs:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: ./logs/mysql
 
 networks:
   share:

@@ -312,7 +312,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ./.flowise  # 本地目录路径
+      device: /var/lib/docker-desktop/Flowise  # 本地目录路径
 
 networks:
   flowise-net:

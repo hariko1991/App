@@ -13,7 +13,8 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=hariko
     volumes:
-      - data:/data/db
+      - /mnt/d/Develop/Wsl/Mnt/Mongo/db:/data/db           # 数据目录
+      - /mnt/d/Develop/Wsl/Mnt/Mongo/configdb:/data/configdb   # 配置目录（新增）
     entrypoint:
       - bash
       - -c
@@ -52,13 +53,19 @@ services:
         wait $$!
 
 
-volumes:
-  data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./mongo/data  # 本地目录路径
+# volumes:
+#   db:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: /var/lib/docker-desktop/Mongo/db  # 本地目录路径
+#   configdb:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: /var/lib/docker-desktop/Mongo/configdb  # 本地目录路径
 
 networks:
   share:

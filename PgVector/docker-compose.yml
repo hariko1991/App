@@ -15,7 +15,7 @@ services:
       - POSTGRES_DB=postgres
       - PGDATA=/var/lib/postgresql/data/pgdata  # 自定义数据目录
     volumes:
-      - data:/var/lib/postgresql/data  # 使用命名卷
+      - /mnt/d/Develop/Wsl/Mnt/PgVector:/var/lib/postgresql/data  # 使用命名卷
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'postgres', '-d', 'vector_db']  # 使用默认用户
       interval: 10s
@@ -25,13 +25,13 @@ services:
     ports:
       - "5432:5432"
 
-volumes:
-  data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./pg/data  # 绑定到本地目录
+# volumes:
+#   data:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: /mnt/d/Develop/Wsl/Mnt/PgVector  # 绑定到本地目录
 
 networks:
   share:

@@ -17,15 +17,15 @@ services:
       retries: 3
       start_period: 30s
     volumes:
-      - data:/data
+      - /mnt/d/Develop/Wsl/Mnt/Redis:/data
 
-volumes:
-  data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./redis/data  # 本地目录路径
+# volumes:
+#   data:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: /var/lib/docker-desktop/Redis  # 本地目录路径
 
 networks:
   share:
