@@ -132,7 +132,7 @@ services:
       - GENERIC_TIMEZONE=Asia/Shanghai
       
     volumes:
-      - /mnt/d/Develop/Wsl/Mnt/N8n/data:/home/node/.n8n
+      - data:/home/node/.n8n
       
     networks:
       - share
@@ -161,17 +161,17 @@ services:
   #   depends_on:
   #     - n8n
 
-# volumes:
-#   # postgres_data:
-#   #   driver: local
-#   # redis_data:
-#   #   driver: local
-#   data:
-#     driver: local
-#     driver_opts:
-#       type: none
-#       o: bind
-#       device: ./data  # 本地目录路径
+volumes:
+  # postgres_data:
+  #   driver: local
+  # redis_data:
+  #   driver: local
+  data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data  # 本地目录路径
 
 
 networks:
