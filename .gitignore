@@ -49,7 +49,3 @@ Thumbs.db
 
 # 环境变量文件（保留 .env 模板，排除实际配置）
 # .env
-.env
-
-# Flowise 特定
-Flowise/.flowise/
