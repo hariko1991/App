@@ -13,7 +13,7 @@ services:
       - MINIO_ROOT_USER=minio-admin
       - MINIO_ROOT_PASSWORD=minio-hariko
     volumes:
-      - /mnt/d/Develop/Wsl/Mnt/Minio:/data
+      - /root/App/Minio:/data
     command: server /data --console-address ":9001"
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']

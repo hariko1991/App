@@ -91,7 +91,7 @@ services:
       - EXECUTIONS_DATA_MAX_AGE=336  # 14天
       
     volumes:
-      - /mnt/d/Develop/Wsl/Mnt/N8n/data:/home/node/.n8n
+      - /root/App/N8n/data/main:/home/node/.n8n
       
     networks:
       - share
@@ -132,7 +132,7 @@ services:
       - GENERIC_TIMEZONE=Asia/Shanghai
       
     volumes:
-      - data:/home/node/.n8n
+      - /root/App/N8n/data/worker:/home/node/.n8n
       
     networks:
       - share
@@ -161,17 +161,17 @@ services:
   #   depends_on:
   #     - n8n
 
-volumes:
-  # postgres_data:
-  #   driver: local
-  # redis_data:
-  #   driver: local
-  data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./data  # 本地目录路径
+# volumes:
+#   # postgres_data:
+#   #   driver: local
+#   # redis_data:
+#   #   driver: local
+#   data:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: ./data  # 本地目录路径
 
 
 networks:

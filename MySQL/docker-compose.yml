@@ -7,10 +7,10 @@ services:
     restart: always
     container_name: share-mysql
     volumes:
-      - /mnt/d/Develop/Wsl/Mnt/MySQL/data:/var/lib/mysql  # 使用命名卷存储数据
-      - /mnt/d/Develop/Wsl/Mnt/MySQL/init:/docker-entrypoint-initdb.d  # 命名卷存储初始化脚本
-      - /mnt/d/Develop/Wsl/Mnt/MySQL/conf:/etc/mysql/conf.d  # 命名卷存储配置文件
-      - /mnt/d/Develop/Wsl/Mnt/MySQL/logs:/var/log/mysql    # 命名卷存储日志
+      - /root/App/MySQL/data:/var/lib/mysql  # 使用命名卷存储数据
+      - /root/App/MySQL/init:/docker-entrypoint-initdb.d  # 命名卷存储初始化脚本
+      - /root/App/MySQL/conf:/etc/mysql/conf.d  # 命名卷存储配置文件
+      - /root/App/MySQL/logs:/var/log/mysql    # 命名卷存储日志
     ports:
       - '3306:3306'
     environment:

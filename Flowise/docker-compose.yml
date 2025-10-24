@@ -19,7 +19,7 @@ services:
         ports:
             - '${PORT:-3000}:${PORT:-3000}'
         volumes:
-            - /mnt/d/Develop/Wsl/Mnt/Flowise/data:/root/.flowise
+            - /root/App/Flowise/data/main:/root/.flowise
         environment:
             # --- Essential Flowise Vars ---
             - PORT=${PORT:-3000}
@@ -164,7 +164,7 @@ services:
         container_name: flowise-worker
         restart: always
         volumes:
-            - /mnt/d/Develop/Wsl/Mnt/Flowise/data:/root/.flowise
+            - /root/App/Flowise/data/worker:/root/.flowise
         environment:
             # --- Essential Flowise Vars ---
             - WORKER_PORT=${WORKER_PORT:-5566}

@@ -1,0 +1,48 @@
+services:
+  n8n-mcp:
+    image: ghcr.io/czlonkowski/n8n-mcp:latest
+    container_name: n8n-mcp
+    restart: unless-stopped
+    entrypoint: ["/tmp/entrypoint.sh"]
+
+    environment:
+      # MCP 模式配置
+      MCP_MODE: ${MCP_MODE:-http}
+      USE_FIXED_HTTP: ${USE_FIXED_HTTP:-true}
+      AUTH_TOKEN: ${AUTH_TOKEN:?AUTH_TOKEN is required}
+
+      # 服务配置
+      NODE_ENV: ${NODE_ENV:-production}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      PORT: ${PORT:-3000}
+
+      # n8n 实例连接配置（可选，用于直接操作 n8n）
+      N8N_API_URL: ${N8N_API_URL:-}
+      N8N_API_KEY: ${N8N_API_KEY:-}
+
+      # 安全配置
+      WEBHOOK_SECURITY_MODE: ${WEBHOOK_SECURITY_MODE:-moderate}
+      AUTH_RATE_LIMIT_WINDOW: ${AUTH_RATE_LIMIT_WINDOW:-900000}
+      AUTH_RATE_LIMIT_MAX: ${AUTH_RATE_LIMIT_MAX:-20}
+
+    volumes:
+      - /root/App/N8n-mcp/data:/app/data
+      - /root/App/N8n-mcp/entrypoint.sh:/tmp/entrypoint.sh:ro
+      - /root/App/N8n-mcp/schema.sql:/app/src/database/schema.sql:ro
+
+    ports:
+      - "3007:3007"
+
+    networks:
+      - share
+
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:3007/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  share:
+    external: true

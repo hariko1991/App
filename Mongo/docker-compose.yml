@@ -13,8 +13,8 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=hariko
     volumes:
-      - /mnt/d/Develop/Wsl/Mnt/Mongo/db:/data/db           # 数据目录
-      - /mnt/d/Develop/Wsl/Mnt/Mongo/configdb:/data/configdb   # 配置目录（新增）
+      - /root/App/Mongo/db:/data/db           # 数据目录
+      - /root/App/Mongo/configdb:/data/configdb   # 配置目录（新增）
     entrypoint:
       - bash
       - -c
@@ -38,7 +38,7 @@ services:
           });
         }' > /data/initReplicaSet.js
         # 启动MongoDB服务
-        exec docker-entrypoint.sh "$$@" &
+        exec docker-entrypoint.sh "$@" &
 
         # 等待MongoDB服务启动
         until mongosh -u admin -p hariko --authenticationDatabase admin --eval "print('waited for connection')"; do
@@ -50,7 +50,7 @@ services:
         mongosh -u admin -p hariko --authenticationDatabase admin /data/initReplicaSet.js
 
         # 等待docker-entrypoint.sh脚本执行的MongoDB服务进程
-        wait $$!
+        wait $!
 
 
 # volumes:

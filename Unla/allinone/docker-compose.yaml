@@ -12,10 +12,16 @@ services:
       - ENV=production
       - TZ=${TZ:-UTC}
     volumes:
-      - /mnt/d/Develop/Wsl/Mnt/Unla/config:/app/configs
-      - /mnt/d/Develop/Wsl/Mnt/Unla/data:/app/data
-      - /mnt/d/Develop/Wsl/Mnt/Unla/.env:/app/.env
+      - /root/App/Unla/allinone/config:/app/configs
+      - /root/App/Unla/allinone/data:/app/data
+      - /root/App/Unla/allinone/.env:/app/.env
     restart: unless-stopped
+    networks:
+      - share
+
+networks:
+  share:
+    external: true
 
 # volumes:
 #   data:

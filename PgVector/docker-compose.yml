@@ -15,23 +15,15 @@ services:
       - POSTGRES_DB=postgres
       - PGDATA=/var/lib/postgresql/data/pgdata  # 自定义数据目录
     volumes:
-      - /mnt/d/Develop/Wsl/Mnt/PgVector:/var/lib/postgresql/data  # 使用命名卷
+      - /root/App/PgVector/data:/var/lib/postgresql/data  # 使用 WSL2 内部文件系统
     healthcheck:
-      test: ['CMD', 'pg_isready', '-U', 'postgres', '-d', 'vector_db']  # 使用默认用户
+      test: ['CMD', 'pg_isready', '-U', 'postgres', '-d', 'postgres']  # 使用默认用户
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
     ports:
       - "5432:5432"
-
-# volumes:
-#   data:
-#     driver: local
-#     driver_opts:
-#       type: none
-#       o: bind
-#       device: /mnt/d/Develop/Wsl/Mnt/PgVector  # 绑定到本地目录
 
 networks:
   share:

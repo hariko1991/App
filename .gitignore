@@ -17,12 +17,14 @@ MySQL/data/
 
 # Minio 特定
 Minio/minio/
+Minio/.minio.sys/
 
 # Unla 特定
 Unla/data/
 
 # Mongo 特定
 Mongo/mongo/data/
+Mongo/db/
 
 # Redis 特定
 Redis/redis/
@@ -47,3 +49,7 @@ Thumbs.db
 
 # 环境变量文件（保留 .env 模板，排除实际配置）
 # .env
+.env
+
+# Flowise 特定
+Flowise/.flowise/
