@@ -49,3 +49,26 @@ Thumbs.db
 
 # 环境变量文件（保留 .env 模板，排除实际配置）
 # .env
+.env
+
+# Flowise 特定
+Flowise/.flowise/
+Flowise/data/
+
+# N8n 特定
+N8n/data/
+
+# N8n-mcp 特定
+N8n-mcp/data/
+N8n-mcp/.env
+
+# Unla 特定
+Unla/allinone/data/
+Unla/multi/data/
+
+# Nginx 特定
+Nginx/html/
+Nginx/logs/
+
+# WeKnora 特定
+WeKnora/data/
